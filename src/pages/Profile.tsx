@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Layout } from "@/components/Layout";
+import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -159,14 +159,14 @@ export default function Profile() {
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mb-4">
                 <h1 className="text-2xl font-display font-bold">{profile.username}</h1>
-                {isOwnProfile ? (
-                  <Link to="/settings">
-                    <Button variant="outline" size="sm">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Edit Profile
-                    </Button>
-                  </Link>
-                ) : (
+              {isOwnProfile ? (
+                <Link to="/edit-profile">
+                  <Button variant="outline" size="sm">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </Link>
+              ) : (
                   <Button
                     onClick={handleFollowToggle}
                     className={

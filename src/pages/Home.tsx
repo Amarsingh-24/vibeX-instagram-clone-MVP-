@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { PostCard } from "@/components/PostCard";
-import { Layout } from "@/components/Layout";
+import PostCard from "@/components/PostCard";
+import Layout from "@/components/Layout";
 import { Loader2 } from "lucide-react";
 
 export default function Home() {

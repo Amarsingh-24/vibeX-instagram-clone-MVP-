@@ -26,7 +26,7 @@ interface PostCardProps {
   onLikeToggle?: () => void;
 }
 
-export function PostCard({ post, onLikeToggle }: PostCardProps) {
+export default function PostCard({ post, onLikeToggle }: PostCardProps) {
   const { user } = useAuth();
   const [isLiking, setIsLiking] = useState(false);
   

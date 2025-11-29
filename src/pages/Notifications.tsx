@@ -94,6 +94,8 @@ const Notifications = () => {
         return "started following you";
       case "story_view":
         return "viewed your story";
+      case "welcome":
+        return "Welcome to vibeX! Start sharing your moments 🎉";
       default:
         return "interacted with you";
     }
@@ -109,6 +111,8 @@ const Notifications = () => {
         return "👤";
       case "story_view":
         return "👁️";
+      case "welcome":
+        return "🎉";
       default:
         return "🔔";
     }
@@ -117,18 +121,18 @@ const Notifications = () => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <h1 className="text-3xl font-display font-bold bg-gradient-neon bg-clip-text text-transparent">
+        <h1 className="text-3xl font-display font-bold text-white">
           Notifications
         </h1>
 
         <div className="space-y-2">
           {notifications.map((notification) => (
-            <div
+              <div
               key={notification.id}
               onClick={() => handleNotificationClick(notification)}
               className={`p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02] ${
                 notification.read
-                  ? "bg-card"
+                  ? "bg-card/50"
                   : "bg-card shadow-neon-blue border-l-4 border-primary"
               }`}
             >
@@ -144,11 +148,17 @@ const Notifications = () => {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm">
-                    <span className="font-semibold">
-                      {notification.actor.username}
-                    </span>{" "}
-                    {getNotificationText(notification)}
+                  <p className="text-sm text-white">
+                    {notification.type === "welcome" ? (
+                      <span>{getNotificationText(notification)}</span>
+                    ) : (
+                      <>
+                        <span className="font-semibold text-white">
+                          {notification.actor.username}
+                        </span>{" "}
+                        <span className="text-foreground/80">{getNotificationText(notification)}</span>
+                      </>
+                    )}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(notification.created_at), {

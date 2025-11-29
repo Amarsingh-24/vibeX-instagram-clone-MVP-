@@ -124,13 +124,13 @@ const Stories = () => {
     <Layout>
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-display font-bold bg-gradient-neon bg-clip-text text-transparent">
+          <h1 className="text-3xl font-display font-bold text-white">
             Stories
           </h1>
         </div>
 
         <div className="bg-card rounded-xl p-6 shadow-neon-blue">
-          <h2 className="text-xl font-semibold mb-4">Upload Story</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Upload Story</h2>
           <div className="space-y-4">
             <div>
               <input

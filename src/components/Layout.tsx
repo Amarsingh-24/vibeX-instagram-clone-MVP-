@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Explore", path: "/explore" },
+    { icon: Search, label: "Search", path: "/search" },
     { icon: Image, label: "Stories", path: "/stories" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: Bell, label: "Notifications", path: "/notifications" },
@@ -26,18 +26,18 @@ export default function Layout({ children }: LayoutProps) {
 
   const mobileNavItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Explore", path: "/explore" },
+    { icon: Search, label: "Search", path: "/search" },
+    { icon: PlusSquare, label: "Create", path: "/create" },
     { icon: Bell, label: "Alerts", path: "/notifications" },
-    { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: `/profile/${user?.id}` },
   ];
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-neon-blue">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-display font-bold bg-gradient-neon bg-clip-text text-transparent">
+            <span className="text-2xl font-display font-bold text-foreground">
               vibeX
             </span>
           </Link>
@@ -54,10 +54,10 @@ export default function Layout({ children }: LayoutProps) {
                     "flex items-center space-x-2 text-sm font-medium transition-smooth",
                     isActive
                       ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-foreground/80 hover:text-foreground"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5", isActive && "fill-primary")} />
+                  <Icon className={cn("w-5 h-5", isActive && "fill-primary stroke-primary")} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -68,7 +68,7 @@ export default function Layout({ children }: LayoutProps) {
             variant="ghost"
             size="icon"
             onClick={signOut}
-            className="hover:bg-destructive/10 hover:text-destructive"
+            className="text-foreground hover:bg-destructive/10 hover:text-destructive"
           >
             <LogOut className="w-5 h-5" />
           </Button>
@@ -78,7 +78,7 @@ export default function Layout({ children }: LayoutProps) {
       <main className="container py-6">{children}</main>
 
       {/* Mobile bottom navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-neon-purple">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="grid grid-cols-5 h-16 px-2">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
@@ -89,10 +89,10 @@ export default function Layout({ children }: LayoutProps) {
                 to={item.path}
                 className={cn(
                   "flex flex-col items-center justify-center space-y-1 transition-smooth",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-primary" : "text-foreground/80"
                 )}
               >
-                <Icon className={cn("w-6 h-6", isActive && "fill-primary")} />
+                <Icon className={cn("w-6 h-6", isActive && "fill-primary stroke-primary")} />
                 <span className="text-xs">{item.label}</span>
               </Link>
             );

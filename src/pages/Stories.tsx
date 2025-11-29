@@ -50,14 +50,14 @@ const Stories = () => {
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("posts")
+        .from("stories")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("posts").getPublicUrl(filePath);
+      } = supabase.storage.from("stories").getPublicUrl(filePath);
 
       const { error: insertError } = await supabase.from("stories").insert({
         user_id: user.id,

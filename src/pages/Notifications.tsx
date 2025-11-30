@@ -96,6 +96,8 @@ const Notifications = () => {
         return "viewed your story";
       case "welcome":
         return "Welcome to vibeX! Start sharing your moments 🎉";
+      case "welcome_back":
+        return "Welcome back! We missed you 🎉";
       default:
         return "interacted with you";
     }
@@ -113,6 +115,8 @@ const Notifications = () => {
         return "👁️";
       case "welcome":
         return "🎉";
+      case "welcome_back":
+        return "👋";
       default:
         return "🔔";
     }
@@ -149,7 +153,7 @@ const Notifications = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-white">
-                    {notification.type === "welcome" ? (
+                    {notification.type === "welcome" || notification.type === "welcome_back" ? (
                       <span>{getNotificationText(notification)}</span>
                     ) : (
                       <>

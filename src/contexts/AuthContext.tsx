@@ -64,13 +64,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      toast.success("Welcome back!");
+
+      // Get user's profile for the welcome back notification
+      if (data.user) {
+        setTimeout(async () => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("username")
+            .eq("id", data.user.id)
+            .single();
+
+          if (profile) {
+            // Create welcome back notification
+            await supabase.from("notifications").insert({
+              user_id: data.user.id,
+              actor_id: data.user.id,
+              type: "welcome_back",
+              read: false,
+            });
+
+            toast.success(`Welcome back, we missed you ${profile.username}!`);
+          }
+        }, 0);
+      }
+
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");

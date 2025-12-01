@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import Layout from "@/components/Layout";
+import { StoryViewer } from "@/components/StoryViewer";
 
 interface Story {
   id: string;
@@ -26,6 +27,8 @@ const Stories = () => {
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
   const { data: stories = [] } = useQuery({
     queryKey: ["stories"],
@@ -83,8 +86,8 @@ const Stories = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File size must be less than 10MB");
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("File size must be less than 20MB");
       return;
     }
 
@@ -187,10 +190,14 @@ const Stories = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {stories.map((story) => (
+          {stories.map((story, index) => (
             <div
               key={story.id}
               className="relative aspect-[9/16] rounded-xl overflow-hidden shadow-neon-pink cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => {
+                setSelectedStoryIndex(index);
+                setViewerOpen(true);
+              }}
             >
               {story.media_type === "video" ? (
                 <video
@@ -219,6 +226,13 @@ const Stories = () => {
             </div>
           ))}
         </div>
+
+        <StoryViewer
+          open={viewerOpen}
+          onOpenChange={setViewerOpen}
+          stories={stories}
+          initialIndex={selectedStoryIndex}
+        />
       </div>
     </Layout>
   );

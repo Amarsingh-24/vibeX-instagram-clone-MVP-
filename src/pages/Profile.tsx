@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Settings, Grid, Heart } from "lucide-react";
 import { toast } from "sonner";
+import { FollowersFollowingDialog } from "@/components/FollowersFollowingDialog";
 
 export default function Profile() {
   const { userId } = useParams();
@@ -18,6 +19,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState<"followers" | "following">("followers");
 
   const isOwnProfile = user?.id === userId;
 
@@ -107,6 +110,16 @@ export default function Profile() {
           .eq("follower_id", user.id)
           .eq("following_id", userId);
         
+        // Create unfollow notification
+        await supabase
+          .from("notifications")
+          .insert({
+            user_id: userId,
+            actor_id: user.id,
+            type: "follow",
+            read: false,
+          });
+        
         setIsFollowing(false);
         setFollowersCount(prev => prev - 1);
         toast.success("Unfollowed");
@@ -114,6 +127,16 @@ export default function Profile() {
         await supabase
           .from("follows")
           .insert({ follower_id: user.id, following_id: userId });
+        
+        // Create follow notification
+        await supabase
+          .from("notifications")
+          .insert({
+            user_id: userId,
+            actor_id: user.id,
+            type: "follow",
+            read: false,
+          });
         
         setIsFollowing(true);
         setFollowersCount(prev => prev + 1);
@@ -186,14 +209,26 @@ export default function Profile() {
                   <p className="font-semibold">{posts.length}</p>
                   <p className="text-sm text-muted-foreground">posts</p>
                 </div>
-                <div className="text-center">
+                <button 
+                  className="text-center hover:opacity-70 transition-opacity cursor-pointer"
+                  onClick={() => {
+                    setDialogType("followers");
+                    setDialogOpen(true);
+                  }}
+                >
                   <p className="font-semibold">{followersCount}</p>
                   <p className="text-sm text-muted-foreground">followers</p>
-                </div>
-                <div className="text-center">
+                </button>
+                <button 
+                  className="text-center hover:opacity-70 transition-opacity cursor-pointer"
+                  onClick={() => {
+                    setDialogType("following");
+                    setDialogOpen(true);
+                  }}
+                >
                   <p className="font-semibold">{followingCount}</p>
                   <p className="text-sm text-muted-foreground">following</p>
-                </div>
+                </button>
               </div>
 
               {profile.full_name && (
@@ -240,6 +275,13 @@ export default function Profile() {
             </div>
           )}
         </div>
+
+        <FollowersFollowingDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          userId={userId!}
+          type={dialogType}
+        />
       </div>
     </Layout>
   );

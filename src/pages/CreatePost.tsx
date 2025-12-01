@@ -20,8 +20,8 @@ export default function CreatePost() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image must be less than 5MB");
+      if (file.size > 20 * 1024 * 1024) {
+        toast.error("Image must be less than 20MB");
         return;
       }
       setImage(file);
@@ -88,7 +88,7 @@ export default function CreatePost() {
                       Click to upload an image
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      PNG, JPG or WEBP (MAX. 5MB)
+                      PNG, JPG or WEBP (MAX. 20MB)
                     </p>
                   </div>
                   <input

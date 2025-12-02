@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Settings, Grid, Heart } from "lucide-react";
+import { Loader2, Settings, Grid, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { FollowersFollowingDialog } from "@/components/FollowersFollowingDialog";
 
 export default function Profile() {
   const { userId } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -116,7 +117,7 @@ export default function Profile() {
           .insert({
             user_id: userId,
             actor_id: user.id,
-            type: "follow",
+            type: "unfollow",
             read: false,
           });
         
@@ -144,6 +145,59 @@ export default function Profile() {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to update follow status");
+    }
+  };
+
+  const handleMessageClick = async () => {
+    if (!user || !userId) return;
+
+    try {
+      // Check if conversation already exists between these two users
+      const { data: myConversations } = await supabase
+        .from("conversation_participants")
+        .select("conversation_id")
+        .eq("user_id", user.id);
+
+      if (myConversations && myConversations.length > 0) {
+        const conversationIds = myConversations.map(c => c.conversation_id);
+        
+        const { data: existingConversation } = await supabase
+          .from("conversation_participants")
+          .select("conversation_id")
+          .eq("user_id", userId)
+          .in("conversation_id", conversationIds)
+          .maybeSingle();
+
+        if (existingConversation) {
+          // Conversation exists, navigate to messages
+          navigate("/messages");
+          return;
+        }
+      }
+
+      // Create new conversation
+      const { data: newConversation, error: convError } = await supabase
+        .from("conversations")
+        .insert({})
+        .select()
+        .single();
+
+      if (convError) throw convError;
+
+      // Add both participants
+      const { error: partError } = await supabase
+        .from("conversation_participants")
+        .insert([
+          { conversation_id: newConversation.id, user_id: user.id },
+          { conversation_id: newConversation.id, user_id: userId },
+        ]);
+
+      if (partError) throw partError;
+
+      toast.success("Conversation started!");
+      navigate("/messages");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to start conversation");
     }
   };
 
@@ -182,25 +236,35 @@ export default function Profile() {
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mb-4">
                 <h1 className="text-2xl font-display font-bold">{profile.username}</h1>
-              {isOwnProfile ? (
-                <Link to="/edit-profile">
-                  <Button variant="outline" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </Button>
-                </Link>
-              ) : (
-                  <Button
-                    onClick={handleFollowToggle}
-                    className={
-                      isFollowing
-                        ? "bg-secondary"
-                        : "bg-gradient-sunset hover:opacity-90"
-                    }
-                    size="sm"
-                  >
-                    {isFollowing ? "Following" : "Follow"}
-                  </Button>
+                {isOwnProfile ? (
+                  <Link to="/edit-profile">
+                    <Button variant="outline" size="sm">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={handleFollowToggle}
+                      className={
+                        isFollowing
+                          ? "bg-secondary"
+                          : "bg-gradient-sunset hover:opacity-90"
+                      }
+                      size="sm"
+                    >
+                      {isFollowing ? "Following" : "Follow"}
+                    </Button>
+                    <Button
+                      onClick={handleMessageClick}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Message
+                    </Button>
+                  </div>
                 )}
               </div>
 

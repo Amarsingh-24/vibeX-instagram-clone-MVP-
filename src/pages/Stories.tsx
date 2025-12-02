@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Eye } from "lucide-react";
 import Layout from "@/components/Layout";
 import { StoryViewer } from "@/components/StoryViewer";
 
@@ -19,6 +19,7 @@ interface Story {
     username: string;
     avatar_url: string | null;
   };
+  view_count?: number;
 }
 
 const Stories = () => {
@@ -40,7 +41,23 @@ const Stories = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Story[];
+      
+      // Fetch view counts for each story
+      const storiesWithViews = await Promise.all(
+        (data || []).map(async (story) => {
+          const { count } = await supabase
+            .from("story_views")
+            .select("*", { count: "exact", head: true })
+            .eq("story_id", story.id);
+          
+          return {
+            ...story,
+            view_count: count || 0,
+          };
+        })
+      );
+      
+      return storiesWithViews as Story[];
     },
   });
 
@@ -127,13 +144,13 @@ const Stories = () => {
     <Layout>
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-display font-bold text-white">
+          <h1 className="text-3xl font-display font-bold text-foreground">
             Stories
           </h1>
         </div>
 
         <div className="bg-card rounded-xl p-6 shadow-neon-blue">
-          <h2 className="text-xl font-semibold text-white mb-4">Upload Story</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Upload Story</h2>
           <div className="space-y-4">
             <div>
               <input
@@ -212,15 +229,23 @@ const Stories = () => {
                 />
               )}
               <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-background to-transparent">
-                <div className="flex items-center gap-2">
-                  <img
-                    src={story.profiles.avatar_url || "/placeholder.svg"}
-                    alt={story.profiles.username}
-                    className="w-8 h-8 rounded-full ring-2 ring-primary"
-                  />
-                  <span className="text-sm font-semibold text-foreground">
-                    {story.profiles.username}
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={story.profiles.avatar_url || "/placeholder.svg"}
+                      alt={story.profiles.username}
+                      className="w-8 h-8 rounded-full ring-2 ring-primary"
+                    />
+                    <span className="text-sm font-semibold text-foreground">
+                      {story.profiles.username}
+                    </span>
+                  </div>
+                  {story.user_id === user?.id && (
+                    <div className="flex items-center gap-1 text-foreground/80">
+                      <Eye className="h-4 w-4" />
+                      <span className="text-xs font-medium">{story.view_count}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

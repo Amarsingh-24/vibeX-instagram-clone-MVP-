@@ -5,6 +5,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;
@@ -53,11 +56,53 @@ const Notifications = () => {
     },
   });
 
+  const deleteNotificationMutation = useMutation({
+    mutationFn: async (notificationId: string) => {
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .eq("id", notificationId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("Notification deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete notification");
+    },
+  });
+
+  const deleteAllNotificationsMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("All notifications deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete notifications");
+    },
+  });
+
   const handleNotificationClick = (notification: Notification) => {
     markAsReadMutation.mutate(notification.id);
     if (notification.post_id) {
       navigate(`/post/${notification.post_id}`);
     }
+  };
+
+  const handleDeleteNotification = (e: React.MouseEvent, notificationId: string) => {
+    e.stopPropagation();
+    deleteNotificationMutation.mutate(notificationId);
   };
 
   useEffect(() => {
@@ -92,6 +137,8 @@ const Notifications = () => {
         return "commented on your post";
       case "follow":
         return "started following you";
+      case "unfollow":
+        return "unfollowed you";
       case "story_view":
         return "viewed your story";
       case "welcome":
@@ -111,6 +158,8 @@ const Notifications = () => {
         return "💬";
       case "follow":
         return "👤";
+      case "unfollow":
+        return "👋";
       case "story_view":
         return "👁️";
       case "welcome":
@@ -125,13 +174,26 @@ const Notifications = () => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <h1 className="text-3xl font-display font-bold text-white">
-          Notifications
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            Notifications
+          </h1>
+          {notifications.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => deleteAllNotificationsMutation.mutate()}
+              disabled={deleteAllNotificationsMutation.isPending}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All
+            </Button>
+          )}
+        </div>
 
         <div className="space-y-2">
           {notifications.map((notification) => (
-              <div
+            <div
               key={notification.id}
               onClick={() => handleNotificationClick(notification)}
               className={`p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02] ${
@@ -152,12 +214,12 @@ const Notifications = () => {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-white">
+                  <p className="text-sm text-foreground">
                     {notification.type === "welcome" || notification.type === "welcome_back" ? (
                       <span>{getNotificationText(notification)}</span>
                     ) : (
                       <>
-                        <span className="font-semibold text-white">
+                        <span className="font-semibold text-foreground">
                           {notification.actor.username}
                         </span>{" "}
                         <span className="text-foreground/80">{getNotificationText(notification)}</span>
@@ -170,6 +232,14 @@ const Notifications = () => {
                     })}
                   </p>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="opacity-0 group-hover:opacity-100 hover:bg-destructive/20 hover:text-destructive"
+                  onClick={(e) => handleDeleteNotification(e, notification.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           ))}

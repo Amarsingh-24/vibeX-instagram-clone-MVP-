@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Zap, Sparkles, AlertCircle, Github } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
@@ -19,8 +20,19 @@ const Auth = () => {
   const [error, setError] = useState("");
   const [resetEmail, setResetEmail] = useState("");
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const { signIn, signUp, signInWithOAuth, resetPassword, user } = useAuth();
   const navigate = useNavigate();
+
+  // Load saved email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("vibeX_saved_email");
+    const savedRememberMe = localStorage.getItem("vibeX_remember_me") === "true";
+    if (savedEmail && savedRememberMe) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -63,6 +75,15 @@ const Auth = () => {
     setError("");
     
     try {
+      // Save email if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem("vibeX_saved_email", email);
+        localStorage.setItem("vibeX_remember_me", "true");
+      } else {
+        localStorage.removeItem("vibeX_saved_email");
+        localStorage.removeItem("vibeX_remember_me");
+      }
+      
       await signIn(email, password);
     } catch (error: any) {
       const message = error?.message || "Sign in failed. Please check your credentials.";
@@ -122,10 +143,20 @@ const Auth = () => {
     setIsLoading(true);
     try {
       await resetPassword(resetEmail);
+      toast.success("Password reset link sent! Check your email inbox.");
       setShowResetDialog(false);
       setResetEmail("");
     } catch (error: any) {
-      toast.error(error?.message || "Failed to send reset email");
+      // Provide more user-friendly error messages
+      let errorMessage = "Failed to send reset email";
+      if (error?.message?.includes("rate limit")) {
+        errorMessage = "Too many requests. Please wait a few minutes and try again.";
+      } else if (error?.message?.includes("not found")) {
+        errorMessage = "No account found with this email address.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -203,6 +234,18 @@ const Auth = () => {
                       className="transition-smooth bg-input border-border focus:border-primary"
                     />
                   </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember-me"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <Label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
+                      Remember my email
+                    </Label>
+                  </div>
+                  
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-neon hover:opacity-90 transition-smooth shadow-neon-blue text-background font-semibold"

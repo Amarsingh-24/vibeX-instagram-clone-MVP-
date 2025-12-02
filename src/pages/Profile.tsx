@@ -175,10 +175,10 @@ export default function Profile() {
         }
       }
 
-      // Create new conversation
+      // Create new conversation with created_by
       const { data: newConversation, error: convError } = await supabase
         .from("conversations")
-        .insert({})
+        .insert({ created_by: user.id })
         .select()
         .single();
 

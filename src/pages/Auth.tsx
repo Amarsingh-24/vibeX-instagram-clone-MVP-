@@ -8,9 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Zap, Sparkles, AlertCircle, Github } from "lucide-react";
+import { Zap, Sparkles, AlertCircle, User, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -21,15 +22,17 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const { signIn, signUp, signInWithOAuth, resetPassword, user } = useAuth();
+  const [savedAccounts, setSavedAccounts] = useState<string[]>([]);
+  const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
 
-  // Load saved email on mount
+  // Load saved accounts on mount
   useEffect(() => {
-    const savedEmail = localStorage.getItem("vibeX_saved_email");
-    const savedRememberMe = localStorage.getItem("vibeX_remember_me") === "true";
-    if (savedEmail && savedRememberMe) {
-      setEmail(savedEmail);
+    const accounts = JSON.parse(localStorage.getItem("vibeX_saved_accounts") || "[]");
+    setSavedAccounts(accounts);
+    const lastUsedEmail = localStorage.getItem("vibeX_last_email");
+    if (lastUsedEmail && accounts.includes(lastUsedEmail)) {
+      setEmail(lastUsedEmail);
       setRememberMe(true);
     }
   }, []);
@@ -75,13 +78,14 @@ const Auth = () => {
     setError("");
     
     try {
-      // Save email if remember me is checked
+      // Save account if remember me is checked
       if (rememberMe) {
-        localStorage.setItem("vibeX_saved_email", email);
-        localStorage.setItem("vibeX_remember_me", "true");
-      } else {
-        localStorage.removeItem("vibeX_saved_email");
-        localStorage.removeItem("vibeX_remember_me");
+        const accounts = JSON.parse(localStorage.getItem("vibeX_saved_accounts") || "[]");
+        if (!accounts.includes(email)) {
+          accounts.push(email);
+          localStorage.setItem("vibeX_saved_accounts", JSON.stringify(accounts));
+        }
+        localStorage.setItem("vibeX_last_email", email);
       }
       
       await signIn(email, password);
@@ -113,18 +117,26 @@ const Auth = () => {
     }
   };
 
-  const handleOAuthSignIn = async (provider: 'google' | 'github') => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await signInWithOAuth(provider);
-    } catch (error: any) {
-      const message = error?.message || `Failed to sign in with ${provider}`;
-      setError(message);
-      toast.error(message);
-    } finally {
-      setIsLoading(false);
+  const handleSavedAccountClick = (savedEmail: string) => {
+    setEmail(savedEmail);
+    setRememberMe(true);
+    // Focus password field
+    setTimeout(() => {
+      document.getElementById("signin-password")?.focus();
+    }, 100);
+  };
+
+  const removeSavedAccount = (accountToRemove: string) => {
+    const updatedAccounts = savedAccounts.filter(acc => acc !== accountToRemove);
+    setSavedAccounts(updatedAccounts);
+    localStorage.setItem("vibeX_saved_accounts", JSON.stringify(updatedAccounts));
+    if (localStorage.getItem("vibeX_last_email") === accountToRemove) {
+      localStorage.removeItem("vibeX_last_email");
     }
+    if (email === accountToRemove) {
+      setEmail("");
+    }
+    toast.success("Account removed");
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -201,6 +213,50 @@ const Auth = () => {
               </TabsList>
               
               <TabsContent value="signin">
+                {savedAccounts.length > 0 && (
+                  <div className="mt-4 mb-4">
+                    <Label className="text-foreground text-sm mb-2 block">Saved Accounts</Label>
+                    <div className="space-y-2">
+                      {savedAccounts.map((account) => (
+                        <div 
+                          key={account}
+                          className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border hover:bg-muted transition-smooth cursor-pointer group"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleSavedAccountClick(account)}
+                            className="flex items-center gap-3 flex-1 text-left"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-gradient-neon flex items-center justify-center">
+                              <User className="w-5 h-5 text-background" />
+                            </div>
+                            <span className="text-foreground font-medium">{account}</span>
+                          </button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeSavedAccount(account);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or use another account</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <form onSubmit={handleSignIn} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email" className="text-foreground">Email</Label>
@@ -253,43 +309,6 @@ const Auth = () => {
                   >
                     {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
-
-                  <div className="relative my-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOAuthSignIn('google')}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Google
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOAuthSignIn('github')}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      <Github className="mr-2 h-4 w-4" />
-                      GitHub
-                    </Button>
-                  </div>
 
                   <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
                     <DialogTrigger asChild>
@@ -399,43 +418,6 @@ const Auth = () => {
                       </>
                     )}
                   </Button>
-
-                  <div className="relative my-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOAuthSignIn('google')}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Google
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOAuthSignIn('github')}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      <Github className="mr-2 h-4 w-4" />
-                      GitHub
-                    </Button>
-                  </div>
                 </form>
               </TabsContent>
             </Tabs>

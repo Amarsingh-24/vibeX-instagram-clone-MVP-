@@ -3,6 +3,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Story {
   id: string;
@@ -25,6 +27,7 @@ interface StoryViewerProps {
 }
 
 export function StoryViewer({ open, onOpenChange, stories, initialIndex }: StoryViewerProps) {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
   useEffect(() => {
@@ -32,6 +35,30 @@ export function StoryViewer({ open, onOpenChange, stories, initialIndex }: Story
   }, [initialIndex, open]);
 
   const currentStory = stories[currentIndex];
+
+  // Record story view when viewing someone else's story
+  useEffect(() => {
+    const recordView = async () => {
+      if (!open || !currentStory || !user || currentStory.user_id === user.id) return;
+
+      // Check if already viewed
+      const { data: existing } = await supabase
+        .from("story_views")
+        .select("id")
+        .eq("story_id", currentStory.id)
+        .eq("viewer_id", user.id)
+        .single();
+
+      if (!existing) {
+        await supabase.from("story_views").insert({
+          story_id: currentStory.id,
+          viewer_id: user.id,
+        });
+      }
+    };
+
+    recordView();
+  }, [open, currentStory?.id, user]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));

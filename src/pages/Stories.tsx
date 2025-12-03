@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Upload, X, Eye } from "lucide-react";
 import Layout from "@/components/Layout";
 import { StoryViewer } from "@/components/StoryViewer";
+import { StoryViewersDialog } from "@/components/StoryViewersDialog";
 
 interface Story {
   id: string;
@@ -30,6 +31,8 @@ const Stories = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [viewersDialogOpen, setViewersDialogOpen] = useState(false);
+  const [selectedStoryId, setSelectedStoryId] = useState<string>("");
 
   const { data: stories = [] } = useQuery({
     queryKey: ["stories"],
@@ -241,10 +244,17 @@ const Stories = () => {
                     </span>
                   </div>
                   {story.user_id === user?.id && (
-                    <div className="flex items-center gap-1 text-foreground/80">
+                    <button
+                      className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedStoryId(story.id);
+                        setViewersDialogOpen(true);
+                      }}
+                    >
                       <Eye className="h-4 w-4" />
                       <span className="text-xs font-medium">{story.view_count}</span>
-                    </div>
+                    </button>
                   )}
                 </div>
               </div>
@@ -257,6 +267,12 @@ const Stories = () => {
           onOpenChange={setViewerOpen}
           stories={stories}
           initialIndex={selectedStoryIndex}
+        />
+
+        <StoryViewersDialog
+          open={viewersDialogOpen}
+          onOpenChange={setViewersDialogOpen}
+          storyId={selectedStoryId}
         />
       </div>
     </Layout>

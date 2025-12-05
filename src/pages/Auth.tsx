@@ -181,7 +181,7 @@ const Auth = () => {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-neon rounded-2xl mb-4 shadow-neon-blue animate-pulse">
             <Zap className="w-10 h-10 text-background" />
           </div>
-          <h1 className="text-5xl font-display font-bold bg-gradient-neon bg-clip-text text-transparent mb-2">
+          <h1 className="text-5xl font-display font-bold text-white mb-2">
             vibeX
           </h1>
           <p className="text-muted-foreground text-lg">Share your moments, feel the vibe</p>

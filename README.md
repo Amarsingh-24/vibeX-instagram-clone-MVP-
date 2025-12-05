@@ -1,6 +1,7 @@
-# vibeX - Social Media Platform (Live Demo Coming soon)
+# vibeX - Social Media Platform
 
 [![CI](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml/badge.svg)](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vibex-social.vercel.app)
 
 A modern, full-stack social media application built with React, TypeScript, and Supabase. vibeX enables users to share moments, connect with others, and discover content through an intuitive, Instagram-inspired interface.
 
@@ -107,15 +108,14 @@ vibeX/
 
 ### Prerequisites
 - Node.js 18+ and npm
-- Supabase account (or use Supabase CLI for local development)
+- Supabase account (or use existing project)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-.git
-  cd vibeX-instagram-clone-MVP-
-
+   cd vibeX-instagram-clone-MVP-
    ```
 
 2. **Install dependencies**
@@ -129,6 +129,7 @@ vibeX/
    ```env
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+   VITE_SUPABASE_PROJECT_ID=your_project_id
    ```
 
 4. **Database Setup**
@@ -144,6 +145,16 @@ vibeX/
    
    Navigate to `http://localhost:5173`
 
+### Vercel Deployment
+
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables in Vercel dashboard:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `VITE_SUPABASE_PROJECT_ID`
+4. Deploy!
+
 ### Supabase Configuration
 
 Ensure your Supabase project has:
@@ -151,35 +162,32 @@ Ensure your Supabase project has:
 - Storage buckets created: `posts`, `avatars`, `stories`
 - Row-Level Security policies applied to all tables
 
-
+## 📸 Screenshots
 
 ### Demo
 ![Demo](screenshots/demo.gif)
 
-**## 🛠️ What I Built (My Role)
+## 🛠️ What I Built
 
-I developed the major features and logic of vibeX, including:
+I developed vibeX from the ground up, including:
 
-- React + TypeScript frontend and custom UI components
-- User authentication (signup, login, session management)
-- Image upload and Supabase Storage integration
-- Instagram-style stories with 24-hour expiration and viewer tracking
-- Real-time direct messaging between users
-- Social features: likes, comments, follow/unfollow
-- Explore page with trending content algorithm
-- Real-time notifications
-- Responsive dark UI theme with neon accents
+- **Frontend Architecture** - React + TypeScript with custom components and hooks
+- **Authentication System** - Complete signup, login, and session management
+- **Media Handling** - Image upload pipeline with Supabase Storage integration
+- **Stories Feature** - Instagram-style stories with 24-hour expiration and viewer tracking
+- **Real-Time Messaging** - Direct messaging with live updates using Supabase Realtime
+- **Social Features** - Likes, comments, follow/unfollow system with optimistic updates
+- **Content Discovery** - Explore page with trending content algorithm
+- **Notification System** - Real-time notifications for all social interactions
+- **UI/UX Design** - Responsive dark theme with custom neon accent color palette
 
 ### Technical Responsibilities
-- Designed and implemented database structure in Supabase
-- Added Row-Level Security (RLS) for user and content protection
-- Handled real-time subscriptions for messaging and notifications
-- Ensured proper input validation and secure rules
-- Debugged, tested, and documented core functionality
-
-### Note on AI Tools
-I used Lovable AI to assist with some UI scaffolding and boilerplate generation.  
-All production logic, architecture decisions, security rules, testing, and improvements were implemented by me.
+- Designed and implemented the complete database schema in PostgreSQL
+- Implemented Row-Level Security (RLS) policies for all tables
+- Built real-time subscriptions for messaging and notifications
+- Added comprehensive input validation (client & server-side)
+- Set up CI/CD pipeline with GitHub Actions
+- Wrote documentation and technical decisions
 
 ## 🔒 Security Features
 
@@ -212,6 +220,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## 📧 Contact
+
+**Amar Singh**
+- GitHub: [@Amarsingh-24](https://github.com/Amarsingh-24)
 
 For questions or feedback, please open an issue on GitHub.
 

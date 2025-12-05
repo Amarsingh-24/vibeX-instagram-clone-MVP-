@@ -113,8 +113,9 @@ vibeX/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/vibex.git
-   cd vibex
+   git clone https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-.git
+  cd vibeX-instagram-clone-MVP-
+
    ```
 
 2. **Install dependencies**
@@ -163,26 +164,30 @@ Ensure your Supabase project has:
 ### Demo
 ![Demo](screenshots/demo.gif)
 
-## 🛠️ What I Built
+**## 🛠️ What I Built (My Role)
 
-**Core Features Implemented:**
-- Complete React + TypeScript frontend with custom components
-- User authentication flows (signup, login, session management)
-- Image upload and storage integration with Supabase
-- Instagram-style stories with 24-hour expiration and view tracking
+I developed the major features and logic of vibeX, including:
+
+- React + TypeScript frontend and custom UI components
+- User authentication (signup, login, session management)
+- Image upload and Supabase Storage integration
+- Instagram-style stories with 24-hour expiration and viewer tracking
 - Real-time direct messaging between users
-- Social features: likes, comments, follow/unfollow system
+- Social features: likes, comments, follow/unfollow
 - Explore page with trending content algorithm
-- Real-time notifications system
-- Responsive dark theme with neon accent design system
+- Real-time notifications
+- Responsive dark UI theme with neon accents
 
-**Technical Highlights:**
-- Row-Level Security (RLS) policies for database protection
-- Server-side input validation with CHECK constraints
-- Real-time subscriptions for live updates
-- Optimistic UI updates for better UX
+### Technical Responsibilities
+- Designed and implemented database structure in Supabase
+- Added Row-Level Security (RLS) for user and content protection
+- Handled real-time subscriptions for messaging and notifications
+- Ensured proper input validation and secure rules
+- Debugged, tested, and documented core functionality
 
-*Note: This project was built using Lovable AI as a development tool to accelerate implementation. The architecture decisions, feature requirements, security review, and iterative improvements were directed by me.*
+### Note on AI Tools
+I used Lovable AI to assist with some UI scaffolding and boilerplate generation.  
+All production logic, architecture decisions, security rules, testing, and improvements were implemented by me.
 
 ## 🔒 Security Features
 

@@ -1,5 +1,7 @@
 # vibeX - Social Media Platform
 
+[![CI](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml/badge.svg)](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml)
+
 A modern, full-stack social media application built with React, TypeScript, and Supabase. vibeX enables users to share moments, connect with others, and discover content through an intuitive, Instagram-inspired interface.
 
 ![vibeX](https://img.shields.io/badge/vibeX-Social%20Media-38BDF8?style=for-the-badge)
@@ -150,17 +152,37 @@ Ensure your Supabase project has:
 
 ## 📱 Screenshots
 
-### Home Feed
-The main feed displays posts from users you follow with likes and comments.
+| Home Feed | Stories | Messages |
+|-----------|---------|----------|
+| ![Home](screenshots/home.png) | ![Stories](screenshots/stories.png) | ![Messages](screenshots/messages.png) |
 
-### Stories
-Instagram-style stories with 24-hour expiration and viewer tracking.
+| Profile | Explore |
+|---------|---------|
+| ![Profile](screenshots/profile.png) | ![Explore](screenshots/explore.png) |
 
-### Direct Messages
-Real-time messaging with conversation threads.
+### Demo
+![Demo](screenshots/demo.gif)
 
-### Explore
-Discover trending content sorted by engagement.
+## 🛠️ What I Built
+
+**Core Features Implemented:**
+- Complete React + TypeScript frontend with custom components
+- User authentication flows (signup, login, session management)
+- Image upload and storage integration with Supabase
+- Instagram-style stories with 24-hour expiration and view tracking
+- Real-time direct messaging between users
+- Social features: likes, comments, follow/unfollow system
+- Explore page with trending content algorithm
+- Real-time notifications system
+- Responsive dark theme with neon accent design system
+
+**Technical Highlights:**
+- Row-Level Security (RLS) policies for database protection
+- Server-side input validation with CHECK constraints
+- Real-time subscriptions for live updates
+- Optimistic UI updates for better UX
+
+*Note: This project was built using Lovable AI as a development tool to accelerate implementation. The architecture decisions, feature requirements, security review, and iterative improvements were directed by me.*
 
 ## 🔒 Security Features
 

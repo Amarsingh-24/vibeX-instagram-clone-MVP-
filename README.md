@@ -151,15 +151,7 @@ Ensure your Supabase project has:
 - Storage buckets created: `posts`, `avatars`, `stories`
 - Row-Level Security policies applied to all tables
 
-## 📱 Screenshots
 
-| Home Feed | Stories | Messages |
-|-----------|---------|----------|
-| ![Home](screenshots/home.png) | ![Stories](screenshots/stories.png) | ![Messages](screenshots/messages.png) |
-
-| Profile | Explore |
-|---------|---------|
-| ![Profile](screenshots/profile.png) | ![Explore](screenshots/explore.png) |
 
 ### Demo
 ![Demo](screenshots/demo.gif)

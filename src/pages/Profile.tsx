@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,12 +10,28 @@ import { Loader2, Settings, Grid, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { FollowersFollowingDialog } from "@/components/FollowersFollowingDialog";
 
+interface Profile {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+}
+
+interface ProfilePost {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  likes: { user_id: string }[];
+  comments: { id: string }[];
+}
+
 export default function Profile() {
   const { userId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [posts, setPosts] = useState<ProfilePost[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followersCount, setFollowersCount] = useState(0);
@@ -25,15 +41,7 @@ export default function Profile() {
 
   const isOwnProfile = user?.id === userId;
 
-  useEffect(() => {
-    if (userId) {
-      fetchProfile();
-      fetchPosts();
-      if (!isOwnProfile) checkFollowStatus();
-    }
-  }, [userId]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -62,9 +70,9 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("posts")
@@ -77,13 +85,13 @@ export default function Profile() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setPosts(data || []);
+      setPosts((data as ProfilePost[]) || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
-  };
+  }, [userId]);
 
-  const checkFollowStatus = async () => {
+  const checkFollowStatus = useCallback(async () => {
     if (!user || !userId) return;
     
     try {
@@ -98,7 +106,15 @@ export default function Profile() {
     } catch (error) {
       console.error("Error checking follow status:", error);
     }
-  };
+  }, [user, userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchProfile();
+      fetchPosts();
+      if (!isOwnProfile) checkFollowStatus();
+    }
+  }, [userId, fetchProfile, fetchPosts, checkFollowStatus, isOwnProfile]);
 
   const handleFollowToggle = async () => {
     if (!user) return;
@@ -143,8 +159,9 @@ export default function Profile() {
         setFollowersCount(prev => prev + 1);
         toast.success("Following!");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update follow status");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update follow status";
+      toast.error(errorMessage);
     }
   };
 
@@ -196,8 +213,9 @@ export default function Profile() {
 
       toast.success("Conversation started!");
       navigate("/messages");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start conversation");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to start conversation";
+      toast.error(errorMessage);
     }
   };
 

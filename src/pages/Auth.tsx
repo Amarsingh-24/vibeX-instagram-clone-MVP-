@@ -89,10 +89,10 @@ const Auth = () => {
       }
       
       await signIn(email, password);
-    } catch (error: any) {
-      const message = error?.message || "Sign in failed. Please check your credentials.";
-      setError(message);
-      toast.error(message);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Sign in failed. Please check your credentials.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -108,10 +108,10 @@ const Auth = () => {
     
     try {
       await signUp(email, password, username);
-    } catch (error: any) {
-      const message = error?.message || "Account creation failed. Please try again.";
-      setError(message);
-      toast.error(message);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Account creation failed. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -158,17 +158,17 @@ const Auth = () => {
       toast.success("Password reset link sent! Check your email inbox.");
       setShowResetDialog(false);
       setResetEmail("");
-    } catch (error: any) {
-      // Provide more user-friendly error messages
-      let errorMessage = "Failed to send reset email";
-      if (error?.message?.includes("rate limit")) {
-        errorMessage = "Too many requests. Please wait a few minutes and try again.";
-      } else if (error?.message?.includes("not found")) {
-        errorMessage = "No account found with this email address.";
-      } else if (error?.message) {
-        errorMessage = error.message;
+    } catch (error) {
+      const errMsg = error instanceof Error ? error.message : "";
+      let finalErrorMessage = "Failed to send reset email";
+      if (errMsg.includes("rate limit")) {
+        finalErrorMessage = "Too many requests. Please wait a few minutes and try again.";
+      } else if (errMsg.includes("not found")) {
+        finalErrorMessage = "No account found with this email address.";
+      } else if (errMsg) {
+        finalErrorMessage = errMsg;
       }
-      toast.error(errorMessage);
+      toast.error(finalErrorMessage);
     } finally {
       setIsLoading(false);
     }

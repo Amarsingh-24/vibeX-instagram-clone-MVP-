@@ -1,16 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PostCard from "@/components/PostCard";
 import Layout from "@/components/Layout";
 import { Loader2 } from "lucide-react";
 
+interface HomePost {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  created_at: string;
+  profiles: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
+  likes: { user_id: string }[];
+  comments: { id: string }[];
+}
+
 export default function Home() {
   const { user } = useAuth();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<HomePost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       // Fetch posts from followed users and own posts
       const { data: followsData } = await supabase
@@ -33,19 +47,19 @@ export default function Home() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setPosts(data || []);
+      setPosts((data as HomePost[]) || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     if (user) {
       fetchPosts();
     }
-  }, [user]);
+  }, [user, fetchPosts]);
 
   if (loading) {
     return (

@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -32,7 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -49,31 +47,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            username,
-          },
+          data: { username },
         },
       });
-
       if (error) throw error;
       toast.success("Account created successfully!");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create account");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create account";
+      toast.error(errorMessage);
       throw error;
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      // Get user's profile for the welcome back notification
       if (data.user) {
         setTimeout(async () => {
           const { data: profile } = await supabase
@@ -83,22 +74,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .single();
 
           if (profile) {
-            // Create welcome back notification
             await supabase.from("notifications").insert({
               user_id: data.user.id,
               actor_id: data.user.id,
               type: "welcome_back",
               read: false,
             });
-
             toast.success(`Welcome back, we missed you ${profile.username}!`);
           }
         }, 0);
       }
-
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign in");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to sign in";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -107,13 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
+        options: { redirectTo: `${window.location.origin}/` },
       });
       if (error) throw error;
-    } catch (error: any) {
-      toast.error(error.message || `Failed to sign in with ${provider}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : `Failed to sign in with ${provider}`;
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -125,8 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       if (error) throw error;
       toast.success("Password reset link sent to your email!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send reset email");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to send reset email";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -137,8 +126,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       toast.success("Signed out successfully");
       navigate("/auth");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign out");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to sign out";
+      toast.error(errorMessage);
     }
   };
 

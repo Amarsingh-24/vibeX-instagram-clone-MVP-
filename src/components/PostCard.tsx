@@ -21,7 +21,7 @@ interface PostCardProps {
       avatar_url: string | null;
     };
     likes: { user_id: string }[];
-    comments: any[];
+    comments: { id: string }[];
   };
   onLikeToggle?: () => void;
 }
@@ -55,7 +55,9 @@ export default function PostCard({ post, onLikeToggle }: PostCardProps) {
         if (error) throw error;
       }
       onLikeToggle?.();
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update like";
+      toast.error(errorMessage);
       toast.error(error.message || "Failed to update like");
     } finally {
       setIsLiking(false);

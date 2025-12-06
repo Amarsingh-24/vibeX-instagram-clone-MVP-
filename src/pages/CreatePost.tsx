@@ -63,9 +63,10 @@ export default function CreatePost() {
 
       toast.success("Post created successfully!");
       navigate("/");
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create post";
       console.error("Error creating post:", error);
-      toast.error(error.message || "Failed to create post");
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }

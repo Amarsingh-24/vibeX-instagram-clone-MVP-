@@ -30,37 +30,39 @@ export function FollowersFollowingDialog({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        if (type === "followers") {
+          const { data, error } = await supabase
+            .from("follows")
+            .select("follower_id, profiles!follows_follower_id_fkey(id, username, full_name, avatar_url)")
+            .eq("following_id", userId);
+
+          if (error) throw error;
+          const profiles = data?.map((item: { profiles: Profile | null }) => item.profiles).filter(Boolean) as Profile[];
+          setUsers(profiles || []);
+        } else {
+          const { data, error } = await supabase
+            .from("follows")
+            .select("following_id, profiles!follows_following_id_fkey(id, username, full_name, avatar_url)")
+            .eq("follower_id", userId);
+
+          if (error) throw error;
+          const profiles = data?.map((item: { profiles: Profile | null }) => item.profiles).filter(Boolean) as Profile[];
+          setUsers(profiles || []);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (open) {
       fetchUsers();
     }
   }, [open, userId, type]);
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      if (type === "followers") {
-        const { data, error } = await supabase
-          .from("follows")
-          .select("follower_id, profiles!follows_follower_id_fkey(id, username, full_name, avatar_url)")
-          .eq("following_id", userId);
-
-        if (error) throw error;
-        setUsers(data?.map((item: any) => item.profiles).filter(Boolean) || []);
-      } else {
-        const { data, error } = await supabase
-          .from("follows")
-          .select("following_id, profiles!follows_following_id_fkey(id, username, full_name, avatar_url)")
-          .eq("follower_id", userId);
-
-        if (error) throw error;
-        setUsers(data?.map((item: any) => item.profiles).filter(Boolean) || []);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

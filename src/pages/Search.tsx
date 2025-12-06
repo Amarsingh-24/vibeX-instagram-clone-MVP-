@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,11 +11,18 @@ import { Search as SearchIcon, Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+interface SearchProfile {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
 export default function Search() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchProfile[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Fetch suggested users (people not followed yet)
@@ -31,7 +38,7 @@ export default function Search() {
         .limit(10);
 
       if (error) throw error;
-      return data || [];
+      return (data as SearchProfile[]) || [];
     },
     enabled: !!user,
   });
@@ -123,7 +130,7 @@ export default function Search() {
         .limit(20);
 
       if (error) throw error;
-      setResults(data || []);
+      setResults((data as SearchProfile[]) || []);
     } catch (error) {
       console.error("Error searching users:", error);
     } finally {

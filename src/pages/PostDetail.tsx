@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,24 +11,44 @@ import { Heart, Loader2, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+interface PostProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+interface PostLike {
+  user_id: string;
+}
+
+interface Post {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  created_at: string;
+  profiles: PostProfile;
+  likes: PostLike[];
+}
+
+interface Comment {
+  id: string;
+  text: string;
+  created_at: string;
+  user_id: string;
+  profiles: PostProfile;
+}
+
 export default function PostDetail() {
   const { postId } = useParams();
   const { user } = useAuth();
-  const [post, setPost] = useState<any>(null);
-  const [comments, setComments] = useState<any[]>([]);
+  const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [isLiking, setIsLiking] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
 
-  useEffect(() => {
-    if (postId) {
-      fetchPost();
-      fetchComments();
-    }
-  }, [postId]);
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("posts")
@@ -41,15 +61,15 @@ export default function PostDetail() {
         .single();
 
       if (error) throw error;
-      setPost(data);
+      setPost(data as Post);
     } catch (error) {
       console.error("Error fetching post:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("comments")
@@ -61,17 +81,24 @@ export default function PostDetail() {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      setComments(data || []);
+      setComments((data as Comment[]) || []);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
-  };
+  }, [postId]);
+
+  useEffect(() => {
+    if (postId) {
+      fetchPost();
+      fetchComments();
+    }
+  }, [postId, fetchPost, fetchComments]);
 
   const handleLike = async () => {
     if (!user || !post || isLiking) return;
     
     setIsLiking(true);
-    const isLiked = post.likes.some((like: any) => like.user_id === user.id);
+    const isLiked = post.likes.some((like) => like.user_id === user.id);
 
     try {
       if (isLiked) {
@@ -90,8 +117,9 @@ export default function PostDetail() {
         if (error) throw error;
       }
       fetchPost();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update like");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update like";
+      toast.error(errorMessage);
     } finally {
       setIsLiking(false);
     }
@@ -115,8 +143,9 @@ export default function PostDetail() {
       setNewComment("");
       fetchComments();
       toast.success("Comment added!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add comment");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to add comment";
+      toast.error(errorMessage);
     } finally {
       setIsCommenting(false);
     }
@@ -132,8 +161,9 @@ export default function PostDetail() {
       if (error) throw error;
       fetchComments();
       toast.success("Comment deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete comment");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete comment";
+      toast.error(errorMessage);
     }
   };
 
@@ -157,7 +187,7 @@ export default function PostDetail() {
     );
   }
 
-  const isLiked = post.likes.some((like: any) => like.user_id === user?.id);
+  const isLiked = post.likes.some((like) => like.user_id === user?.id);
   const likesCount = post.likes.length;
 
   return (

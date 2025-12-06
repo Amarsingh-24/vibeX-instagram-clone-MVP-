@@ -122,5 +122,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate") as { handler: () => void }],
 } satisfies Config;

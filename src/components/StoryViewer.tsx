@@ -35,30 +35,32 @@ export function StoryViewer({ open, onOpenChange, stories, initialIndex }: Story
   }, [initialIndex, open]);
 
   const currentStory = stories[currentIndex];
+  const currentStoryId = currentStory?.id;
+  const currentStoryUserId = currentStory?.user_id;
 
   // Record story view when viewing someone else's story
   useEffect(() => {
     const recordView = async () => {
-      if (!open || !currentStory || !user || currentStory.user_id === user.id) return;
+      if (!open || !currentStoryId || !user || currentStoryUserId === user.id) return;
 
       // Check if already viewed
       const { data: existing } = await supabase
         .from("story_views")
         .select("id")
-        .eq("story_id", currentStory.id)
+        .eq("story_id", currentStoryId)
         .eq("viewer_id", user.id)
         .single();
 
       if (!existing) {
         await supabase.from("story_views").insert({
-          story_id: currentStory.id,
+          story_id: currentStoryId,
           viewer_id: user.id,
         });
       }
     };
 
     recordView();
-  }, [open, currentStory?.id, user]);
+  }, [open, currentStoryId, currentStoryUserId, user]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));

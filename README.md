@@ -253,4 +253,3 @@ Suggestions and improvements are always welcome.
 Contact
 amarfighter37@gmail.com
 linkedin https://www.linkedin.com/in/sardarsathiamarsingh/
-If you have questions or feedback, open an issue on GitHub.

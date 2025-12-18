@@ -1,14 +1,8 @@
 # vibeX - Social Media Platform
-[![Live Demo](vibexinstaclonemvp.lovable.app
-vibeX – Social Media Platform
+[Live Demo](vibexinstaclonemvp.lovable.app)
 
 vibeX is a full-stack social media application inspired by Instagram. I built this project to understand how modern social platforms work end-to-end — from authentication and database design to real-time features and UI/UX.
-
 It allows users to share photos, connect with others, post stories, chat in real time, and explore trending content, all wrapped in a clean dark UI.
-
-🔗 Live Demo: https://vibex-social.vercel.app
-
-🔗 CI Status: GitHub Actions enabled
 
 Why I Built This
 

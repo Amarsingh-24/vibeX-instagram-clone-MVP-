@@ -2,230 +2,265 @@
 
 [![CI](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml/badge.svg)](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vibex-social.vercel.app)
+vibeX – Social Media Platform
 
-A modern, full-stack social media application built with React, TypeScript, and Supabase. vibeX enables users to share moments, connect with others, and discover content through an intuitive, Instagram-inspired interface.
+vibeX is a full-stack social media application inspired by Instagram. I built this project to understand how modern social platforms work end-to-end — from authentication and database design to real-time features and UI/UX.
 
-![vibeX](https://img.shields.io/badge/vibeX-Social%20Media-38BDF8?style=for-the-badge)
-![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-3FCF8E?style=for-the-badge&logo=supabase)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss)
+It allows users to share photos, connect with others, post stories, chat in real time, and explore trending content, all wrapped in a clean dark UI.
 
-## 🌟 Features
+🔗 Live Demo: https://vibex-social.vercel.app
 
-### Core Functionality
-- **User Authentication** - Secure email/password authentication with session management
-- **User Profiles** - Customizable profiles with avatars, bios, and full names
-- **Image Posts** - Share photos with captions (up to 500 characters)
-- **Social Interactions** - Like, comment, and engage with posts
-- **Follow System** - Follow/unfollow users to curate your feed
+🔗 CI Status: GitHub Actions enabled
 
-### Advanced Features
-- **Instagram-Style Stories** - Share ephemeral content that expires after 24 hours
-- **Story Analytics** - View who watched your stories with viewer tracking
-- **Direct Messaging** - Real-time private conversations between users
-- **Explore Page** - Discover trending posts sorted by engagement
-- **Real-Time Notifications** - Instant alerts for likes, comments, follows, and story views
-- **User Search** - Find and discover new users to follow
-- **Suggested Users** - Algorithmic user recommendations
+Why I Built This
 
-### Technical Highlights
-- **Real-Time Updates** - Live data synchronization using Supabase Realtime
-- **Responsive Design** - Fully optimized for desktop, tablet, and mobile devices
-- **Dark Theme** - Modern dark UI with neon accent colors
-- **Row-Level Security** - Robust database security with RLS policies
-- **Input Validation** - Both client-side and server-side data validation
+I wanted to build something realistic and production-like, not just a CRUD app.
+vibeX helped me learn:
 
-## 🛠️ Tech Stack
+How real social apps handle auth, feeds, and relationships
 
-### Frontend
-- **React 18** - Modern UI library with hooks and functional components
-- **TypeScript** - Type-safe JavaScript for better developer experience
-- **TailwindCSS** - Utility-first CSS framework for rapid UI development
-- **Shadcn/UI** - High-quality, accessible component library
-- **React Router** - Client-side routing and navigation
-- **React Query** - Server state management and caching
-- **Lucide Icons** - Beautiful, consistent iconography
+Designing a secure PostgreSQL schema with RLS
 
-### Backend
-- **Supabase** - Open-source Firebase alternative
-  - PostgreSQL database with real-time subscriptions
-  - Built-in authentication and authorization
-  - File storage for media uploads
-  - Row-Level Security (RLS) for data protection
+Using Supabase Realtime for chats and notifications
 
-### Build Tools
-- **Vite** - Next-generation frontend build tool
-- **ESLint** - Code quality and consistency
+Building a responsive UI that actually feels like a social app
 
-## 📁 Project Structure
+This project was built from scratch — backend schema, frontend architecture, and deployment.
 
-```
-vibeX/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── ui/              # Shadcn/UI base components
-│   │   ├── Layout.tsx       # Main app layout
-│   │   ├── PostCard.tsx     # Post display component
-│   │   ├── StoryViewer.tsx  # Story viewing component
-│   │   └── ...
-│   ├── contexts/            # React contexts
-│   │   └── AuthContext.tsx  # Authentication state
-│   ├── hooks/               # Custom React hooks
-│   ├── integrations/        # External service integrations
-│   │   └── supabase/        # Supabase client and types
-│   ├── pages/               # Application pages/routes
-│   │   ├── Auth.tsx         # Login/Signup page
-│   │   ├── Home.tsx         # Main feed
-│   │   ├── Profile.tsx      # User profiles
-│   │   ├── Stories.tsx      # Stories feature
-│   │   ├── Messages.tsx     # Direct messaging
-│   │   ├── Explore.tsx      # Discover content
-│   │   └── ...
-│   └── lib/                 # Utility functions
-├── supabase/
-│   ├── config.toml          # Supabase configuration
-│   └── migrations/          # Database migrations
-└── public/                  # Static assets
-```
+Features
+Core Features
 
-## 🗄️ Database Schema
+Email & password authentication
 
-### Tables
-- **profiles** - User profile information
-- **posts** - User-created posts with images
-- **comments** - Comments on posts
-- **likes** - Post likes tracking
-- **follows** - User follow relationships
-- **stories** - Ephemeral story content
-- **story_views** - Story view analytics
-- **conversations** - Chat conversation metadata
-- **conversation_participants** - Chat participants
-- **messages** - Direct messages
-- **notifications** - User notifications
+User profiles (avatar, name, bio)
 
-## 🚀 Getting Started
+Create image posts with captions
 
-### Prerequisites
-- Node.js 18+ and npm
-- Supabase account (or use existing project)
+Like and comment on posts
 
-### Installation
+Follow / unfollow users
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-.git
-   cd vibeX-instagram-clone-MVP-
-   ```
+Personalized feed based on follows
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+Stories
 
-3. **Environment Setup**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
-   VITE_SUPABASE_PROJECT_ID=your_project_id
-   ```
+Instagram-style stories
 
-4. **Database Setup**
-   
-   Run the migrations in the `supabase/migrations` folder in order, or connect to an existing Supabase project with the schema already configured.
+Stories expire automatically after 24 hours
 
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+Track who viewed your stories
 
-6. **Open your browser**
-   
-   Navigate to `http://localhost:5173`
+Messaging & Notifications
 
-### Vercel Deployment
+Real-time direct messaging
 
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Add environment variables in Vercel dashboard:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_PUBLISHABLE_KEY`
-   - `VITE_SUPABASE_PROJECT_ID`
-4. Deploy!
+Live notifications for:
 
-### Supabase Configuration
+Likes
 
-Ensure your Supabase project has:
-- Authentication enabled with email/password provider
-- Storage buckets created: `posts`, `avatars`, `stories`
-- Row-Level Security policies applied to all tables
+Comments
 
-## 📸 Screenshots
+New followers
 
-### Demo
-![Demo](screenshots/demo.gif)
+Story views
 
-## 🛠️ What I Built
+Discovery
 
-I developed vibeX from the ground up, including:
+Explore page showing trending posts
 
-- **Frontend Architecture** - React + TypeScript with custom components and hooks
-- **Authentication System** - Complete signup, login, and session management
-- **Media Handling** - Image upload pipeline with Supabase Storage integration
-- **Stories Feature** - Instagram-style stories with 24-hour expiration and viewer tracking
-- **Real-Time Messaging** - Direct messaging with live updates using Supabase Realtime
-- **Social Features** - Likes, comments, follow/unfollow system with optimistic updates
-- **Content Discovery** - Explore page with trending content algorithm
-- **Notification System** - Real-time notifications for all social interactions
-- **UI/UX Design** - Responsive dark theme with custom neon accent color palette
+User search
 
-### Technical Responsibilities
-- Designed and implemented the complete database schema in PostgreSQL
-- Implemented Row-Level Security (RLS) policies for all tables
-- Built real-time subscriptions for messaging and notifications
-- Added comprehensive input validation (client & server-side)
-- Set up CI/CD pipeline with GitHub Actions
-- Wrote documentation and technical decisions
+Suggested users to follow
 
-## 🔒 Security Features
+Tech Stack
+Frontend
 
-- **Row-Level Security (RLS)** - All database tables protected with granular access policies
-- **Input Validation** - Server-side constraints prevent data injection
-- **Secure Authentication** - Supabase Auth with session management
-- **HTTPS Only** - All communications encrypted in transit
+React 18
 
-## 🎨 Design System
+TypeScript
 
-vibeX uses a custom dark theme with neon accents:
-- **Background**: `#0D0D0D`
-- **Card Background**: `#1F1F1F`
-- **Primary (Neon Blue)**: `#38BDF8`
-- **Accent (Neon Pink)**: `#F472B6`
-- **Secondary (Neon Purple)**: `#A78BFA`
+Tailwind CSS
 
-## 📄 License
+shadcn/ui
 
-This project is open source and available under the [MIT License](LICENSE).
+React Router
 
-## 🤝 Contributing
+React Query
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Lucide Icons
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Vite
 
-## 📧 Contact
+Backend
 
-**Amar Singh**
-- GitHub: [@Amarsingh-24](https://github.com/Amarsingh-24)
+Supabase
 
-For questions or feedback, please open an issue on GitHub.
+PostgreSQL database
 
----
+Authentication
 
-Built with ❤️ using React, TypeScript, and Supabase
+Storage for images
+
+Realtime subscriptions
+
+Row-Level Security (RLS)
+
+Project Structure
+src/
+├── components/        reusable UI components
+│   ├── ui/            shadcn base components
+│   ├── PostCard.tsx
+│   ├── StoryViewer.tsx
+│   └── Layout.tsx
+├── contexts/
+│   └── AuthContext.tsx
+├── hooks/
+│   └── custom hooks
+├── integrations/
+│   └── supabase/
+├── pages/
+│   ├── Auth.tsx
+│   ├── Home.tsx
+│   ├── Profile.tsx
+│   ├── Explore.tsx
+│   ├── Stories.tsx
+│   └── Messages.tsx
+└── lib/
+    └── helpers and utilities
+
+Database Overview
+
+Main tables used in the project:
+
+profiles
+
+posts
+
+comments
+
+likes
+
+follows
+
+stories
+
+story_views
+
+conversations
+
+conversation_participants
+
+messages
+
+notifications
+
+All tables are protected using Row-Level Security policies.
+
+Getting Started Locally
+Prerequisites
+
+Node.js 18+
+
+npm
+
+Supabase account
+
+Setup
+git clone https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-.git
+cd vibeX-instagram-clone-MVP-
+npm install
+
+
+Create a .env file:
+
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
+VITE_SUPABASE_PROJECT_ID=your_project_id
+
+
+Run the dev server:
+
+npm run dev
+
+
+Open http://localhost:5173
+
+Supabase Notes
+
+Make sure your Supabase project has:
+
+Email/password auth enabled
+
+Storage buckets:
+
+posts
+
+avatars
+
+stories
+
+RLS enabled on all tables
+
+Migrations from /supabase/migrations applied
+
+Deployment
+
+The app is deployed on Vercel.
+
+Steps:
+
+Push code to GitHub
+
+Import project into Vercel
+
+Add environment variables
+
+Deploy
+
+What I Personally Worked On
+
+Designed the full PostgreSQL schema
+
+Wrote all Row-Level Security policies
+
+Built authentication and session handling
+
+Implemented image uploads with Supabase Storage
+
+Built stories with expiration logic
+
+Implemented real-time chat and notifications
+
+Designed the dark UI and layout
+
+Set up GitHub Actions CI
+
+Wrote all documentation
+
+Design
+
+Dark theme with neon accents:
+
+Background: #0D0D0D
+
+Card: #1F1F1F
+
+Primary: #38BDF8
+
+Accent: #F472B6
+
+Secondary: #A78BFA
+
+License
+
+MIT License
+
+Contributing
+
+Feel free to fork the repo and submit PRs.
+Suggestions and improvements are always welcome.
+
+Contact
+amarfighter37@gmail.com
+linkedin https://www.linkedin.com/in/sardarsathiamarsingh/
+If you have questions or feedback, open an issue on GitHub.

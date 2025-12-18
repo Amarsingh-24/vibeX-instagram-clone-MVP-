@@ -1,6 +1,4 @@
 # vibeX - Social Media Platform
-
-[![CI](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml/badge.svg)](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml)
 [![Live Demo](vibexinstaclonemvp.lovable.app
 vibeX – Social Media Platform
 

@@ -1,7 +1,7 @@
 # vibeX - Social Media Platform
 
 [![CI](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml/badge.svg)](https://github.com/Amarsingh-24/vibeX-instagram-clone-MVP-/actions/workflows/ci.yml)
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vibex-social.vercel.app)
+[![Live Demo](vibexinstaclonemvp.lovable.app
 vibeX – Social Media Platform
 
 vibeX is a full-stack social media application inspired by Instagram. I built this project to understand how modern social platforms work end-to-end — from authentication and database design to real-time features and UI/UX.
